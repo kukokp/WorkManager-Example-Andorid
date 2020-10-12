@@ -1,11 +1,13 @@
 package krunal.com.example.workmanager;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import krunal.com.example.workmanager.Logger.AppLogger;
 
 public class MyPeriodicWork extends Worker {
 
@@ -15,13 +17,10 @@ public class MyPeriodicWork extends Worker {
         super(context, workerParams);
     }
 
-
     @NonNull
     @Override
     public Result doWork() {
-
-        Log.e(TAB,"PeriodicWork in BackGround");
-
+        AppLogger.showDebugLog(TAB+" PeriodicWork in BackGround");
         return Result.success();
     }
 }

@@ -1,19 +1,14 @@
 package krunal.com.example.workmanager;
 
 
-import android.arch.lifecycle.Observer;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
@@ -21,6 +16,11 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -50,28 +50,25 @@ public class MainActivity extends AppCompatActivity {
         mWorkWithData = findViewById(R.id.WorkWithData);
 
 
+        WorkManager instance = WorkManager.getInstance(MainActivity.this);
         mOneTimeWork.setOnClickListener(v -> {
             // This is One Time Work Request.
-            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(MyWork.class)
-                    .build();
-
-            WorkManager.getInstance().enqueue(oneTimeWorkRequest);
-
+            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(MyWork.class).build();
+            instance.enqueue(oneTimeWorkRequest);
         });
 
         mPeriodicWork.setOnClickListener(v -> {
             // This is PeriodicWorkRequest it repeats every 10 Hours.
             mPeriodicWorkRequest = new PeriodicWorkRequest.Builder(MyPeriodicWork.class,
-                    10, TimeUnit.HOURS)
+                    2, TimeUnit.MINUTES)
                     .addTag("periodicWorkRequest")
                     .build();
-
-            WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+            instance.enqueue(mPeriodicWorkRequest);
 
         });
 
         mChainableWork.setOnClickListener(v -> {
-            // This is Chainable Work Request it Runs one after author in sequence.
+            // This is Chainable  Work Request it Runs one after author in sequence.
             OneTimeWorkRequest MyWorkA = new OneTimeWorkRequest.Builder(MyWorkA.class)
                     .build();
             OneTimeWorkRequest MyWorkB = new OneTimeWorkRequest.Builder(MyWorkB.class)
@@ -79,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
             OneTimeWorkRequest MyWorkC = new OneTimeWorkRequest.Builder(MyWorkC.class)
                     .build();
 
-            WorkManager.getInstance()
-                    .beginWith(MyWorkA)
+            instance.beginWith(MyWorkA)
                     .then(MyWorkB)
                     .then(MyWorkC)
                     .enqueue();
@@ -99,19 +95,15 @@ public class MainActivity extends AppCompatActivity {
             beginWith_A_and_B.add(MyWorkA);
             beginWith_A_and_B.add(MyWorkB);
 
-            WorkManager.getInstance()
-                    .beginWith(beginWith_A_and_B)
+            instance.beginWith(beginWith_A_and_B)
                     .then(MyWorkC)
                     .enqueue();
-
-
-
         });
 
         mCancelPeriodicWork.setOnClickListener(v -> {
             // We are Canceling PeriodicWork by Id.
             getId = mPeriodicWorkRequest.getId();
-            WorkManager.getInstance().cancelWorkById(getId);
+            instance.cancelWorkById(getId);
             Toast.makeText(this, "PeriodicWork Cancel By Id", Toast.LENGTH_LONG).show();
         });
 
@@ -127,16 +119,16 @@ public class MainActivity extends AppCompatActivity {
                     .setConstraints(constraints)
                     .build();
 
-            WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+            instance.enqueue(oneTimeWorkRequest);
 
-            WorkManager.getInstance().getWorkInfoByIdLiveData(oneTimeWorkRequest.getId())
+            instance.getWorkInfoByIdLiveData(oneTimeWorkRequest.getId())
                     .observe(this, new Observer<WorkInfo>() {
                         @Override
                         public void onChanged(@Nullable WorkInfo workInfo) {
 
                             if (workInfo != null) {
                                 Toast.makeText(MainActivity.this, "oneTimeWorkRequest: " +
-                                        String.valueOf(workInfo.getState().name()), Toast.LENGTH_LONG)
+                                        workInfo.getState().name(), Toast.LENGTH_LONG)
                                         .show();
                             }
 
@@ -166,10 +158,9 @@ public class MainActivity extends AppCompatActivity {
                             .setInputData(data)
                             .build();
 
-            WorkManager.getInstance().enqueue(oneTimeWorkRequest);
+            instance.enqueue(oneTimeWorkRequest);
 
-
-            WorkManager.getInstance().getWorkInfoByIdLiveData(oneTimeWorkRequest.getId())
+            instance.getWorkInfoByIdLiveData(oneTimeWorkRequest.getId())
                     .observe(this, new Observer<WorkInfo>() {
                         @Override
                         public void onChanged(@Nullable WorkInfo workInfo) {
@@ -181,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });
-
         });
 
     }

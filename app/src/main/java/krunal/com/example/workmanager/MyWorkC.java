@@ -1,11 +1,13 @@
 package krunal.com.example.workmanager;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import krunal.com.example.workmanager.Logger.AppLogger;
 
 public class MyWorkC extends Worker {
 
@@ -18,9 +20,7 @@ public class MyWorkC extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-
-        Log.e(TAB,"My WorkC");
-
+        AppLogger.showDebugLog(TAB+" My WorkC");
         return Result.success();
     }
 }
